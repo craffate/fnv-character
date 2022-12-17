@@ -1,0 +1,21 @@
+<div *ngIf="character">
+  <h1>{{ character.name }}</h1>
+  <p>{{ character.experience }} XP</p>
+  <table>
+    <caption>Actor values</caption>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let av of character.actorValues">
+        <td>{{ av.name }}</td>
+        <td>{{ av.currentValue }}</td>
+        <td>{{ av.type }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
