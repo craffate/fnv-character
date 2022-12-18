@@ -1,21 +1,17 @@
-<div *ngIf="character">
-  <h1>{{ character.name }}</h1>
-  <p>{{ character.experience }} XP</p>
-  <table>
-    <caption>Actor values</caption>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Type</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let av of character.actorValues">
-        <td>{{ av.name }}</td>
-        <td>{{ av.currentValue }}</td>
-        <td>{{ av.type }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<ng-container *ngIf="character">
+  <form #characterForm (ngSubmit)="onSubmit()">
+    <label for="name">Name: </label>
+    <input id="name" type="text" name="name" [(ngModel)]="character.name">
+    <label for="experience">Experience: </label>
+    <input id="experience" type="text" name="experience" [(ngModel)]="character.experience">
+    <label for="actorValues">Actor values: </label>
+    <div formGroupName="actorValues">
+      <ng-container *ngFor="let av of character.actorValues">
+        <label [for]="av.name">{{ av.name }}: </label>
+        <input [id]="av.name" type="number" [name]="av.name" [(ngModel)]="av.baseValue">
+      </ng-container>
+    </div>
+    <button type="submit">Save</button>
+  </form>
+</ng-container>
+

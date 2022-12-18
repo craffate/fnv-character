@@ -42,4 +42,8 @@ export class CharacterComponent {
     return undefined;
   }
 
+  onSubmit(): void {
+    this.updateCharacter();
+    this.getCharacter();
+  }
 }
