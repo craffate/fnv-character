@@ -18,6 +18,7 @@ export class CharacterService {
   }
 
   updateCharacter(character: Character): void {
+    character.calcSkills();
     this.character = character;
   }
 
