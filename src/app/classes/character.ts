@@ -6,10 +6,10 @@ import { ActorValueCode } from "@enums/actor-value-code";
 export class Character {
   private _name: string;
   private _experience: number;
-  private _actorValues: ActorValue[];
+  private _actorValues: ActorValue.AV[];
   private _perks: Perk[];
 
-  constructor(name: string, experience: number, actorValue: ActorValue[], perks: Perk[]) {
+  constructor(name: string, experience: number, actorValue: ActorValue.AV[], perks: Perk[]) {
     this._name = name;
     this._experience = experience;
     this._actorValues = actorValue;
@@ -32,11 +32,11 @@ export class Character {
     this._experience = v;
   }
 
-  public get actorValues() : ActorValue[] {
+  public get actorValues() : ActorValue.AV[] {
     return this._actorValues
   }
 
-  public set actorValues(v : ActorValue[]) {
+  public set actorValues(v : ActorValue.AV[]) {
     this._actorValues = v;
   }
 
@@ -48,11 +48,11 @@ export class Character {
     this._perks = v;
   }
 
-  public getActorValues(type?: ActorValueType): ActorValue[] {
+  public getActorValues(type?: ActorValueType): ActorValue.AV[] {
     return this.actorValues.filter(av => av.type === type);
   }
 
-  public getActorValue(code: ActorValueCode): ActorValue | undefined {
+  public getActorValue(code: ActorValueCode): ActorValue.AV | undefined {
     return this.actorValues.find(av => av.code === code);
   }
 
@@ -66,33 +66,75 @@ export class Character {
       switch (av.code) {
         case ActorValueCode.Barter:
         case ActorValueCode.Speech:
-          primary = special.find(av => av.code === ActorValueCode.Charisma);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Charisma);
+        break;
         case ActorValueCode.EnergyWeapons:
         case ActorValueCode.Explosives:
-          primary = special.find(av => av.code === ActorValueCode.Perception);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Perception);
+        break;
         case ActorValueCode.Medicine:
         case ActorValueCode.Repair:
         case ActorValueCode.Science:
-          primary = special.find(av => av.code === ActorValueCode.Intelligence);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Intelligence);
+        break;
         case ActorValueCode.MeleeWeapons:
-          primary = special.find(av => av.code === ActorValueCode.Strength);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Strength);
+        break;
         case ActorValueCode.Guns:
         case ActorValueCode.Sneak:
-          primary = special.find(av => av.code === ActorValueCode.Agility);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Agility);
+        break;
         case ActorValueCode.Survival:
         case ActorValueCode.Unarmed:
-          primary = special.find(av => av.code === ActorValueCode.Endurance);
-          break;
+        primary = special.find(av => av.code === ActorValueCode.Endurance);
+        break;
       }
       if (primary && luck) {
-        av.baseValue = 2 + (2 * primary.baseValue) + Math.ceil(luck.baseValue / 2);
+        av.baseValue.referenceBaseValue = 2 + (2 * primary.baseValue.referenceBaseValue) + Math.ceil(luck.baseValue.referenceBaseValue / 2);
       }
       return av;
-    })
+    });
   }
+
+  public getBaseActorValue(av: ActorValue.AV): number {
+    return ((av.baseValue.derivedValue || 0.00) + (av.baseValue.setAvOverride || 0.00)) || av.baseValue.referenceBaseValue;
+  }
+
+  public getBaseAC = this.getBaseActorValue;
+
+  public getActorValueModifier(av: ActorValue.AV, filter?: number): number {
+    switch (filter) {
+      case 1:
+        return av.modifiers.perm;
+      case 2:
+        return av.modifiers.temp;
+      case 3:
+      default:
+        return av.modifiers.perm + av.modifiers.temp;
+    }
+  }
+
+  public getAVMod = this.getActorValueModifier;
+
+  public getPermanentActorValue(av: ActorValue.AV): number {
+    return this.getBaseActorValue(av) + this.getActorValueModifier(av, 2);
+  }
+
+  public getPermanentAV = this.getPermanentActorValue;
+
+  public getActorValueInfo(av: ActorValue.AV): string {
+    const computedBase: number = ((av.baseValue.derivedValue || 0.00) + (av.baseValue.setAvOverride || 0.00));
+    const levelupValue: number = computedBase + av.modifiers.perm;
+
+    return (`getActorValueInfo: ${av.name} on ${this.name}
+...Current Value: ${av.currentValue.toFixed(2)} Computed Base: ${computedBase.toFixed(2)}
+...Base Value components:
+......Reference Base Value: ${av.baseValue.referenceBaseValue.toFixed(2)}
+......Derived Value: ${av.baseValue.derivedValue?.toFixed(2)}
+......SetAV override: ${av.baseValue.setAvOverride?.toFixed(2)}
+...Modifiers: Temp: ${av.modifiers.temp.toFixed(2)} Perm: ${av.modifiers.perm.toFixed(2)} Damage: ${av.modifiers.damage.toFixed(2)}
+...Level-up Value: ${levelupValue.toFixed(2)}`);
+  }
+
+  public getAVInfo = this.getActorValueInfo;
 }

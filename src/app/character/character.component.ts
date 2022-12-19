@@ -35,7 +35,7 @@ export class CharacterComponent {
     this.getCharacter();
   }
 
-  getActorValues(type?: ActorValueType): ActorValue[] | undefined {
+  getActorValues(type?: ActorValueType): ActorValue.AV[] | undefined {
     if (this.character) {
       return this.character.getActorValues(type);
     }
