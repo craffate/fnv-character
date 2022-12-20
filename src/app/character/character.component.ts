@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Character } from '@classes/character';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActorValueType } from '@enums/actor-value-type';
 import { ActorValue } from '@interfaces/actor-value';
+import { Character } from '@classes/character';
 import { CharacterService } from '@services/character.service';
 
 @Component({
@@ -11,12 +12,39 @@ import { CharacterService } from '@services/character.service';
 })
 export class CharacterComponent {
   character: Character | undefined = undefined;
+  characterForm: FormGroup = new FormGroup({});
 
   constructor(private characterService: CharacterService) {
   }
 
   ngOnInit(): void {
     this.getCharacter();
+    if (this.character) {
+      this.characterForm.addControl('name', new FormControl(this.character.name));
+      this.characterForm.addControl('experience', new FormControl(this.character.experience));
+      this.characterForm.addControl('actorValues', new FormGroup({}));
+      this.character.actorValues.forEach((av) => {
+        const avFormGroup = this.characterForm.get('actorValues') as FormGroup;
+
+        avFormGroup.addControl(av.name, new FormControl(av.currentValue));
+      });
+      this.characterForm.addControl('perks', new FormControl(this.character.perks));
+    }
+  }
+
+  private setForm(): void {
+    if (this.character) {
+      this.characterForm.patchValue({
+        'name': this.character.name,
+        'experience': this.character.experience,
+        'perks': this.character.perks
+      });
+      this.character.actorValues.forEach((av) => {
+        const formValue = this.characterForm.get('actorValues')?.get(av.name);
+
+        formValue?.patchValue(av.currentValue);
+      })
+    }
   }
 
   getCharacter(): void {
@@ -25,9 +53,7 @@ export class CharacterComponent {
   }
 
   updateCharacter(): void {
-    if (this.character) {
-      this.characterService.updateCharacter(this.character);
-    }
+    this.characterService.updateCharacter(this.characterForm);
   }
 
   resetCharacter(): void {
@@ -45,5 +71,6 @@ export class CharacterComponent {
   onSubmit(): void {
     this.updateCharacter();
     this.getCharacter();
+    this.setForm();
   }
 }

@@ -1,16 +1,19 @@
 <ng-container *ngIf="character">
-  <form #characterForm (ngSubmit)="onSubmit()">
+  <form [formGroup]="characterForm" (ngSubmit)="onSubmit()">
     <label for="name">Name: </label>
-    <input id="name" type="text" name="name" [(ngModel)]="character.name">
+    <input id="name" type="text" formControlName="name">
+    <br>
     <label for="experience">Experience: </label>
-    <input id="experience" type="text" name="experience" [(ngModel)]="character.experience">
-    <label for="actorValues">Actor values: </label>
-    <div formGroupName="actorValues">
+    <input id="experience" type="text" name="experience" formControlName="experience">
+    <hr>
+    <ng-container formGroupName="actorValues">
       <ng-container *ngFor="let av of character.actorValues">
         <label [for]="av.name">{{ av.name }}: </label>
-        <input [id]="av.name" type="number" [name]="av.name" [(ngModel)]="av.baseValue">
+        <input [id]="av.name" type="number" [formControlName]="av.name">
+        <br>
       </ng-container>
-    </div>
+    </ng-container>
+    <hr>
     <button type="submit">Save</button>
   </form>
 </ng-container>
