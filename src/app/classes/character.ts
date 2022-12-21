@@ -90,7 +90,7 @@ export class Character {
         break;
       }
       if (primary && luck) {
-        av.baseValue.referenceBaseValue = 2 + (2 * primary.baseValue.referenceBaseValue) + Math.ceil(luck.baseValue.referenceBaseValue / 2);
+        av.baseValue.derivedValue = 2 + (2 * primary.baseValue.referenceBaseValue) + Math.ceil(luck.baseValue.referenceBaseValue / 2);
       }
       return av;
     });
@@ -100,8 +100,8 @@ export class Character {
     let ret: number;
 
     ret = av.baseValue.referenceBaseValue;
-    if (av.baseValue.setAvOverride) {
-      ret = (av.baseValue.derivedValue || 0.00) + av.baseValue.setAvOverride;
+    if (av.baseValue.setAvOverride || av.baseValue.derivedValue) {
+      ret = (av.baseValue.derivedValue || 0.00) + (av.baseValue.setAvOverride || 0.00);
     }
     return ret;
   }

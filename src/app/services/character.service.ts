@@ -13,6 +13,7 @@ export class CharacterService {
 
   constructor() {
     this.character = DEFAULT_CHARACTER;
+    this.character.calcSkills();
   }
 
   getCharacter(): Observable<Character> {
@@ -29,12 +30,13 @@ export class CharacterService {
         if (ActorValueType.Primary === av.type) {
           av.baseValue.referenceBaseValue = formValue[1];
         } else {
-          av.baseValue.derivedValue = formValue[1];
+          av.baseValue.setAvOverride = (av.baseValue.setAvOverride || 0.00) + formValue[1] - this.character.getPermanentActorValue(av);
         }
       }
     });
     this.character.perks = characterForm.value['perks'];
     this.character.calcSkills();
+    console.log(this.character);
   }
 
   resetCharacter(): Observable<Character> {
