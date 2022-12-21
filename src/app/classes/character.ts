@@ -97,7 +97,13 @@ export class Character {
   }
 
   public getBaseActorValue(av: ActorValue.AV): number {
-    return ((av.baseValue.derivedValue || 0.00) + (av.baseValue.setAvOverride || 0.00)) || av.baseValue.referenceBaseValue;
+    let ret: number;
+
+    ret = av.baseValue.referenceBaseValue;
+    if (av.baseValue.setAvOverride) {
+      ret = (av.baseValue.derivedValue || 0.00) + av.baseValue.setAvOverride;
+    }
+    return ret;
   }
 
   public getBaseAC = this.getBaseActorValue;
@@ -117,17 +123,19 @@ export class Character {
   public getAVMod = this.getActorValueModifier;
 
   public getPermanentActorValue(av: ActorValue.AV): number {
-    return this.getBaseActorValue(av) + this.getActorValueModifier(av, 2);
+    return this.getBaseActorValue(av) + this.getActorValueModifier(av, 1);
   }
 
   public getPermanentAV = this.getPermanentActorValue;
 
   public getActorValueInfo(av: ActorValue.AV): string {
-    const computedBase: number = ((av.baseValue.derivedValue || 0.00) + (av.baseValue.setAvOverride || 0.00));
-    const levelupValue: number = computedBase + av.modifiers.perm;
+    const computedBase: number = this.getBaseActorValue(av);
+    const levelupValue: number = this.getPermanentActorValue(av);
+    const currentValue: number = levelupValue + this.getActorValueModifier(av, 2);
+
 
     return (`getActorValueInfo: ${av.name} on ${this.name}
-...Current Value: ${av.currentValue.toFixed(2)} Computed Base: ${computedBase.toFixed(2)}
+...Current Value: ${currentValue.toFixed(2)} Computed Base: ${computedBase.toFixed(2)}
 ...Base Value components:
 ......Reference Base Value: ${av.baseValue.referenceBaseValue.toFixed(2)}
 ......Derived Value: ${av.baseValue.derivedValue?.toFixed(2)}

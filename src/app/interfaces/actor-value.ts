@@ -23,6 +23,5 @@ export namespace ActorValue {
     description: string | null;
     baseValue: BaseValue;
     modifiers: Modifiers;
-    currentValue: number;
   }
 }

@@ -26,7 +26,7 @@ export class CharacterComponent {
       this.character.actorValues.forEach((av) => {
         const avFormGroup = this.characterForm.get('actorValues') as FormGroup;
 
-        avFormGroup.addControl(av.name, new FormControl(av.currentValue));
+        avFormGroup.addControl(av.name, new FormControl(av.baseValue.referenceBaseValue));
       });
       this.characterForm.addControl('perks', new FormControl(this.character.perks));
     }
@@ -42,7 +42,7 @@ export class CharacterComponent {
       this.character.actorValues.forEach((av) => {
         const formValue = this.characterForm.get('actorValues')?.get(av.name);
 
-        formValue?.patchValue(av.currentValue);
+        formValue?.patchValue(av.baseValue.referenceBaseValue);
       })
     }
   }

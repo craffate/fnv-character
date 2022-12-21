@@ -3,6 +3,7 @@ import { Character } from '@classes/character';
 import { DEFAULT_CHARACTER } from './default-character';
 import { Observable, of } from 'rxjs';
 import { FormGroup } from '@angular/forms';
+import { ActorValueType } from '@enums/actor-value-type';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,11 @@ export class CharacterService {
       const formValue = Object.entries(characterForm.value['actorValues'] as Array<number>).find(k => av.name === k[0]);
 
       if (formValue) {
-        av.baseValue.derivedValue = formValue[1];
+        if (ActorValueType.Primary === av.type) {
+          av.baseValue.referenceBaseValue = formValue[1];
+        } else {
+          av.baseValue.derivedValue = formValue[1];
+        }
       }
     });
     this.character.perks = characterForm.value['perks'];
