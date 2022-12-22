@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Character } from '@classes/character';
 import { DEFAULT_CHARACTER } from './default-character';
-import { Observable, of } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { ActorValueType } from '@enums/actor-value-type';
 
@@ -16,8 +15,8 @@ export class CharacterService {
     this.character.calcSkills();
   }
 
-  getCharacter(): Observable<Character> {
-    return of(this.character);
+  getCharacter(): Character {
+    return this.character;
   }
 
   updateCharacter(characterForm: FormGroup): void {
@@ -36,12 +35,11 @@ export class CharacterService {
     });
     this.character.perks = characterForm.value['perks'];
     this.character.calcSkills();
-    console.log(this.character);
   }
 
-  resetCharacter(): Observable<Character> {
+  resetCharacter(): Character {
     this.character = DEFAULT_CHARACTER;
-    return of(this.character);
+    return this.character;
   }
 
 }

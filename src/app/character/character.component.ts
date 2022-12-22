@@ -48,8 +48,7 @@ export class CharacterComponent {
   }
 
   getCharacter(): void {
-    this.characterService.getCharacter()
-    .subscribe(character => this.character = character);
+    this.character = this.characterService.getCharacter();
   }
 
   updateCharacter(): void {
